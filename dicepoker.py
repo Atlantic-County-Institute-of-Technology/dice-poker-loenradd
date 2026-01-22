@@ -86,20 +86,61 @@ def main():
 
 def start_game():
     game = True
-    reroll = 3
+
+    keep_dice = []
+    game_round = 3
+
+    round_start = True
     dice = Dice()
     dice.create_array()
-    for i in range(6):
-        dice.dice_array[i].roll()
     while game:
-        dice.update_array_vals()
-        os.system('cls' if os.name == 'nt' else 'clear')  # terminal clear command my beloved
-        cur_dice = []
-        cur_dice.append(dice.dice_val_graphic(dice.dice_array_vals))
-        print(luigi)
-        print("".join(cur_dice))
-        input()
 
+        if round_start:
+            round_start = False
+            for i in range(6):
+                if not (i in keep_dice):
+                    dice.dice_array[i].roll()
+            dice.update_array_vals()
+            os.system('cls' if os.name == 'nt' else 'clear')  # terminal clear command my beloved
+            cur_dice = []
+            cur_dice.append(dice.dice_val_graphic(dice.dice_array_vals))
+        if game_round <= 0:
+            game = False
+            print("".join(cur_dice))
+            print(get_pattern(dice.dice_array_vals))
+            print("ok leave now")
+            quit()
+        else:
+
+            print(luigi)
+            print("".join(cur_dice))
+            print(get_pattern(dice.dice_array_vals))
+            print(keep_dice)
+
+            try:
+                kept_dice = int(input("\nChoose the dice you would like to keep. Input anything else to continue. : "))
+                if kept_dice < 1 or kept_dice > dice.max_dice:
+                    input("[!] Please select a valid die.")
+                    continue
+                elif kept_dice in keep_dice:
+                    keep_dice.remove(kept_dice-1)
+                else:
+                    keep_dice.append(kept_dice-1)
+            except ValueError:
+                match input("[!] Are you sure? y/n :"):
+                    case "y":
+                        round_start = True
+                        game_round -= 1
+                        continue
+                    case _:
+                        continue
+
+
+
+def get_pattern(dice_list: list):
+    possible_values = [1, 2, 3, 4, 5, 6]
+    amount_of_each = [0, 0, 0, 0, 0, 0]
+    return "idk"
 
 
 
