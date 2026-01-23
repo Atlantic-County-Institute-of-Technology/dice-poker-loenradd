@@ -6,29 +6,67 @@ import display
 
 class Dice:
     def __init__(self):
+        self.faces = 6
         self.cur_val = int
-        self.max_dice = 6
         self.dice_array = []
         self.dice_array_vals = []
 
 
     def roll(self):
-        self.cur_val = random.randint(1, 6)
+        self.cur_val = random.randint(1, self.faces)
 
-    def get_cur_val(self):
+    def get_val(self):
         return self.cur_val
 
     def create_array(self):
         for i in range(self.max_dice):
             self.dice_array.append(Dice())
-    def update_array_vals(self):
-        for i in range(self.max_dice):
-            if len(self.dice_array_vals) != self.max_dice:
-                self.dice_array_vals.append(self.dice_array[i].cur_val)
+
+
+class DiceHandler:
+
+    def __int__(self):
+        self.keep_list = []
+        self.dice_array = [Dice(), Dice(), Dice(), Dice(), Dice()]
+        self.dice_array_vals = [0, 0, 0, 0, 0]
+
+    def roll_all(self):
+        for i in range(len(self.dice_array)):
+            if not (i in self.keep):
+                self.dice_array[i].roll()
+                self.dice_array_vals[i] = self.dice_array[i].get_val()
+
+    def show(self):
+        return self.dice_array_vals
+
+    def keep(self, die: int):
+        if die in self.keep_list:
+            self.keep_list.remove(die)
+        else:
+            self.keep_list.append(die)
+
+    def dice_val_graphic(self):
+        return display.display_dice(self.dice_array_vals)
+
+    def score(self):
+        amount_of_each = [0, 0, 0, 0, 0, 0]
+        for i in range(len(self.dice_array_vals)):
+            amount_of_each[i] = self.dice_array_vals(i + 1)
+        if 5 in amount_of_each:
+            return "FIVE OF A KIND"
+        elif 4 in amount_of_each:
+            return "FOUR OF A KIND"
+        elif 3 in amount_of_each:
+            return "THREE OF A KIND"
+        elif 2 in amount_of_each:
+            check = amount_of_each.count(2)
+            print(check)
+            if check == 2:
+                return "TWO PAIRS"
             else:
-                self.dice_array_vals[i] = self.dice_array[i].cur_val
-    def dice_val_graphic(self, val):
-        return display.display_dice(val)
+                return "TWO OF A KIND"
+        else:
+            return "STRAIGHT"
 
 
 luigi ="x.:..::..:.Xx:+:+x:&$&.$&$x;&;X&&$&&XXxxxx:...:xxxxxxx;:+xX$XXX$$XXXX$&;++$&&x:;:+&&+$&&xX     \n" \
@@ -87,45 +125,35 @@ def main():
 def start_game():
     game = True
 
-    keep_dice = []
     game_round = 3
 
     round_start = True
-    dice = Dice()
-    dice.create_array()
+    dice = DiceHandler()
     while game:
 
         if round_start:
             round_start = False
-            for i in range(6):
-                if not (i in keep_dice):
-                    dice.dice_array[i].roll()
-            dice.update_array_vals()
+            dice.roll_all()
             os.system('cls' if os.name == 'nt' else 'clear')  # terminal clear command my beloved
-            cur_dice = []
-            cur_dice.append(dice.dice_val_graphic(dice.dice_array_vals))
         if game_round <= 0:
             game = False
-            print("".join(cur_dice))
-            print(get_pattern(dice.dice_array_vals))
+            print(dice.dice_val_graphic())
+            print(dice.score())
             print("ok leave now")
             quit()
         else:
 
             print(luigi)
             print("".join(cur_dice))
-            print(get_pattern(dice.dice_array_vals))
-            print(keep_dice)
+            print(dice.score())
 
             try:
                 kept_dice = int(input("\nChoose the dice you would like to keep. Input anything else to continue. : "))
                 if kept_dice < 1 or kept_dice > dice.max_dice:
                     input("[!] Please select a valid die.")
                     continue
-                elif kept_dice in keep_dice:
-                    keep_dice.remove(kept_dice-1)
                 else:
-                    keep_dice.append(kept_dice-1)
+                    dice.keep(kept_dice)
             except ValueError:
                 match input("[!] Are you sure? y/n :"):
                     case "y":
@@ -134,15 +162,6 @@ def start_game():
                         continue
                     case _:
                         continue
-
-
-
-def get_pattern(dice_list: list):
-    possible_values = [1, 2, 3, 4, 5, 6]
-    amount_of_each = [0, 0, 0, 0, 0, 0]
-    return "idk"
-
-
 
 
 if __name__ == '__main__':
