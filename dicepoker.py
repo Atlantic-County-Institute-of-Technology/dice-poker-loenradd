@@ -25,14 +25,14 @@ class Dice:
 
 class DiceHandler:
 
-    def __int__(self):
+    def __init__(self):
         self.keep_list = []
         self.dice_array = [Dice(), Dice(), Dice(), Dice(), Dice()]
         self.dice_array_vals = [0, 0, 0, 0, 0]
 
     def roll_all(self):
         for i in range(len(self.dice_array)):
-            if not (i in self.keep):
+            if not (i in self.keep_list):
                 self.dice_array[i].roll()
                 self.dice_array_vals[i] = self.dice_array[i].get_val()
 
@@ -50,49 +50,26 @@ class DiceHandler:
 
     def score(self):
         amount_of_each = [0, 0, 0, 0, 0, 0]
-        for i in range(len(self.dice_array_vals)):
-            amount_of_each[i] = self.dice_array_vals(i + 1)
+        for i in range(len(amount_of_each)):
+            amount_of_each[i] = self.dice_array_vals.count(i+1)
         if 5 in amount_of_each:
-            return "FIVE OF A KIND"
+            return "                              FIVE OF A KIND"
         elif 4 in amount_of_each:
-            return "FOUR OF A KIND"
+            return "                              FOUR OF A KIND"
         elif 3 in amount_of_each:
-            return "THREE OF A KIND"
-        elif 2 in amount_of_each:
-            check = amount_of_each.count(2)
-            print(check)
-            if check == 2:
-                return "TWO PAIRS"
+            if 2 in amount_of_each:
+                return "                                 FULL HOUSE"
             else:
-                return "TWO OF A KIND"
+                return "                              THREE OF A KIND"
+        elif 2 in amount_of_each:
+            if amount_of_each.count(2) == 2:
+                return "                                 TWO PAIRS"
+            else:
+                return "                               TWO OF A KIND"
+        elif amount_of_each.count(1) == 5 and amount_of_each[5] != 1:
+            return "                                  STRAIGHT"
         else:
-            return "STRAIGHT"
-
-
-luigi ="x.:..::..:.Xx:+:+x:&$&.$&$x;&;X&&$&&XXxxxx:...:xxxxxxx;:+xX$XXX$$XXXX$&;++$&&x:;:+&&+$&&xX     \n" \
-"$;:;+::+;:;;:.:....&&$..$$&&x$xxx+xXXxxx;..;....xxxx$$+&&$;+;+X&&$xx;+;&&$$&&&+x++xx$$+x$&    \n"\
-"x..........;xxxx+$$&&&X$&&&X$&&$XxxXxxxx+..+++:.xxxxx$&&&$$&&$Xx+x$&&&&&&&&&$X;x$&&x:+&$&&     \n"\
-"$:::;::+:::+x;xxx&&&&$.:&&&&&&&&&&$xxxxxxxx+;+xxxxxxxxX&&&&&&&&&&&&&&&&&&&&x&&&&&&&&&&&&&&     \n"\
-"$:..x..x;..++x$X&&&&&&$&&&&&&&&&&$$xxxxx$x;;;;xxx+++xxx&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&     \n"\
-"x.;...:.:.+Xx.x&&&&&$x..&&&&&&&&&$$X+;$;::;:::;::;X:+xxx&&&XX$&$X&&&&&$X&&&&&$&$X&&&&&$xx$     \n"\
-"X:::+::.:::$x:x&&&&&&&x.&&&&&&&&&$$x:....;;...+;.....xx&&&$$$$XX$&$xX$$$X$XX$$$$$$&$$$$$$$     \n"\
-"x.......&$$$$$$$$&$$Xx:;X$$$:.:;x.:$+:..X&x..:$&....;;.x&$$X$$$XX$$$X$$XX$$X$X$$X$$$$X$XX$     \n"\
-"x:::+::;&x$+xxxx$&&xXx:;x$$x$.::.:;;X:..;...........:;..;;;x$$$xX$+$X$$x$$$X$X$$$XX$$X&$X$     \n"\
-"x;.:x..x$xXx+xXx&&&xXx..$$$x$;x;;..;+&&$;::.....:&&x:...XXXXXXxxxxxxxxxxxxxxxxxxXxxxxxxxxx     \n"\
-".x::$&&&x+xxx;X$$&$$$x;;X$$$X$$&&&X:X&&&&x;::::X&&&&.X&++X++XXxxXxxxX+;;++x$$$$$$$$$$$$$$$     \n"\
-"xxxx$$&&&&$x$$$X$$x&$$&&&$X$$$&&&&$$$$x$&&$+;x&&x+X&&&+++++++++++++Xxx+x$$$$$$$$$$$XXXXXXX     \n"\
-"::...:x$$$$&$$$$X$$$$&&&&$$X$$&$&&$X;$$x;::......x$$$$$$$$$$$$X$$$$XX&$Xxxxxxxx+++++;;xx+x     \n"\
-"&&$$$$$$$$&&&XX$$X$&&$$&&X$xx&&&x&&&&XXx;;;::.::;xxxxxxxxxxxxxxxxxXXX$$&&&&&$&&&&&$$$XXXXX     \n"\
-"&$$&&&&$$$$&&$$X$$X&&&&$$+$&&&xxX+:...x$xx:...+xx$.....;xxx+xx+x;xxxx$$x$$$X&&&X&&&&$&&&$&     \n"\
-"&$&&&&XXxxx&&Xx...X&&$xxxxxxxxx:......X$xxxxxxxxX$:......;+++++++x;xx$$;$$$x$$$x$$$$X$&$$&     \n"\
-"&&&&&&&&&&$xX&$&&$xxx;;$X;+xx:.......;$$Xxx..:$xx$$........;+;:++;;++xxX$$$;$$$+$$$Xx$$$x$     \n"\
-"&&&&&&&&&&$xxxxxxx;+xx+++:.........x&$$$$$$:.;$$$$$$X..........;++++++++;;x;X$$;$$$Xx$$$;$     \n"\
-"xx&&xx+++++XX++++++++;;...........;&$$$$$$$X;$$$$$$$$+;:.........;;++++++++++++xxxxxxxxx;$     \n"\
-"+++;;++;:+;;;;;;:;;;:............:;&$$$$$$$$&$$$$$$$$X:;:............;;:+++++++;+x$x.;xxxx     \n"\
-"xxx;;+xxx;:xxx+;;;:..............:;&$$$$$$x;:x$$$$$$$X;...............;;;;;;::;+x::;;;;;:+     \n"\
-":::;;::::&+.:::;;.................x&$$$$$X:::::$$$$$$X.................;;;;;;;;;;x:+:;:;x$     \n"\
-":::&$+:::$$:::;Xx............xXXx+XXXXXXXXXXXXXXXXXXXXx;xXXx...........:XXXXXXXXXxx$$$X;$&     \n"\
-"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$     "
+            return "                               HIGH DIE ONLY"
 def main():
     print(
 '    ,gggggggggggg,        ,a8a,     ,gggg,   ,ggggggg,\n'
@@ -122,10 +99,11 @@ def main():
     input("Press Enter to Start")
     start_game()
 
+
 def start_game():
     game = True
 
-    game_round = 3
+    game_round = 90
 
     round_start = True
     dice = DiceHandler()
@@ -143,17 +121,17 @@ def start_game():
             quit()
         else:
 
-            print(luigi)
-            print("".join(cur_dice))
+            print(dice.dice_val_graphic())
             print(dice.score())
+            print(dice.keep_list)
 
             try:
                 kept_dice = int(input("\nChoose the dice you would like to keep. Input anything else to continue. : "))
-                if kept_dice < 1 or kept_dice > dice.max_dice:
+                if kept_dice < 1 or kept_dice > 5:
                     input("[!] Please select a valid die.")
                     continue
                 else:
-                    dice.keep(kept_dice)
+                    dice.keep(kept_dice-1)
             except ValueError:
                 match input("[!] Are you sure? y/n :"):
                     case "y":
