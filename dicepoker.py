@@ -1,4 +1,4 @@
-# Leonard DeMarco, 1/13/26 - 0/0/26, Dice Poker
+# Leonard DeMarco, 1/13/26 - 2/2/26, Dice Poker
 
 import random
 import os
@@ -9,7 +9,7 @@ class Dice:
         self.faces = 6
         self.cur_val = int
         self.dice_array = []
-        self.dice_array_vals = []
+        # self.dice_array_vals = []
 
 
     def roll(self):
@@ -27,8 +27,10 @@ class DiceHandler:
 
     def __init__(self):
         self.keep_list = []
+        self.full_kept = []
         self.dice_array = [Dice(), Dice(), Dice(), Dice(), Dice()]
         self.dice_array_vals = [0, 0, 0, 0, 0]
+        self.keep_display_list = ["   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  "]
 
     def roll_all(self):
         for i in range(len(self.dice_array)):
@@ -40,11 +42,22 @@ class DiceHandler:
         return self.dice_array_vals
 
     def keep(self, die: int):
-        if die in self.keep_list:
-            self.keep_list.remove(die)
-        else:
-            self.keep_list.append(die)
+        if die not in self.full_kept:
+            if die in self.keep_list:
+                self.keep_list.remove(die)
+            else:
+                self.keep_list.append(die)
 
+    def keep_display(self, die: int):
+        if die in self.keep_list:
+            self.keep_display_list[die] = "  [NOT KEPT]  "
+        else:
+            self.keep_display_list[die] = "    [KEPT]    "
+
+
+    def update_full_keep(self):
+        self.full_kept += self.keep_list
+        self.keep_list = []
     def dice_val_graphic(self):
         return display.display_dice(self.dice_array_vals)
 
@@ -53,23 +66,42 @@ class DiceHandler:
         for i in range(len(amount_of_each)):
             amount_of_each[i] = self.dice_array_vals.count(i+1)
         if 5 in amount_of_each:
-            return "                              FIVE OF A KIND"
+            return 8
         elif 4 in amount_of_each:
-            return "                              FOUR OF A KIND"
+            return 7
         elif 3 in amount_of_each:
             if 2 in amount_of_each:
-                return "                                 FULL HOUSE"
+                return 6
             else:
-                return "                              THREE OF A KIND"
+                return 5
         elif 2 in amount_of_each:
             if amount_of_each.count(2) == 2:
-                return "                                 TWO PAIRS"
+                return 4
             else:
-                return "                               TWO OF A KIND"
+                return 3
         elif amount_of_each.count(1) == 5 and amount_of_each[5] != 1:
-            return "                                  STRAIGHT"
+            return 2
         else:
-            return "                               HIGH DIE ONLY"
+            return 1
+
+    def score_text(self, id):
+        match id:
+            case 8:
+                return "                              FIVE OF A KIND"
+            case 7:
+                return "                              FOUR OF A KIND"
+            case 6:
+                return "                                 FULL HOUSE"
+            case 5:
+                return "                              THREE OF A KIND"
+            case 4:
+                return "                                 TWO PAIRS"
+            case 3:
+                return "                               TWO OF A KIND"
+            case 2:
+                return "                                  STRAIGHT"
+            case 1:
+                return "                               HIGH DIE ONLY"
 def main():
     print(
 '    ,gggggggggggg,        ,a8a,     ,gggg,   ,ggggggg,\n'
@@ -103,26 +135,27 @@ def main():
 def start_game():
     game = True
 
-    game_round = 90
+    game_round = 3
 
     round_start = True
     dice = DiceHandler()
+    scorer = 0
     while game:
-
+        os.system('cls' if os.name == 'nt' else 'clear')  # terminal clear command my beloved
         if round_start:
             round_start = False
             dice.roll_all()
-            os.system('cls' if os.name == 'nt' else 'clear')  # terminal clear command my beloved
-        if game_round <= 0:
+            scorer = dice.score()
+        if game_round <= 0 or scorer == 8:
             game = False
             print(dice.dice_val_graphic())
-            print(dice.score())
-            print("ok leave now")
+            print(dice.score_text())
             quit()
         else:
 
             print(dice.dice_val_graphic())
-            print(dice.score())
+            print("".join(dice.keep_display_list))
+            print(dice.score_text(scorer))
             print(dice.keep_list)
 
             try:
@@ -132,9 +165,11 @@ def start_game():
                     continue
                 else:
                     dice.keep(kept_dice-1)
+                    dice.keep(kept_dice-1)
             except ValueError:
                 match input("[!] Are you sure? y/n :"):
                     case "y":
+                        dice.update_full_keep()
                         round_start = True
                         game_round -= 1
                         continue
