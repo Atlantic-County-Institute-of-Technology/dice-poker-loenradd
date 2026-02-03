@@ -8,19 +8,12 @@ class Dice:
     def __init__(self):
         self.faces = 6
         self.cur_val = int
-        self.dice_array = []
-        # self.dice_array_vals = []
 
-
-    def roll(self):
+    def roll(self):  # Rolls the dice.
         self.cur_val = random.randint(1, self.faces)
 
-    def get_val(self):
+    def get_val(self):  # Returns dice value.
         return self.cur_val
-
-    def create_array(self):
-        for i in range(self.max_dice):
-            self.dice_array.append(Dice())
 
 
 class DiceHandler:
@@ -32,36 +25,39 @@ class DiceHandler:
         self.dice_array_vals = [0, 0, 0, 0, 0]
         self.keep_display_list = ["   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  ", "   [NOT KEPT]  "]
 
-    def roll_all(self):
+    def roll_all(self):  # Rolls all dice, except for the dice included in full_kept list.
         for i in range(len(self.dice_array)):
-            if not (i in self.keep_list):
+            if not (i in self.full_kept):
                 self.dice_array[i].roll()
                 self.dice_array_vals[i] = self.dice_array[i].get_val()
 
     def show(self):
         return self.dice_array_vals
 
-    def keep(self, die: int):
-        if die not in self.full_kept:
+    def keep(self, die: int):  # Keeps a dice. Adds it to keep_list, which will eventually be added to full_kept.
+        if not die in self.full_kept:
             if die in self.keep_list:
                 self.keep_list.remove(die)
             else:
                 self.keep_list.append(die)
 
-    def keep_display(self, die: int):
-        if die in self.keep_list:
-            self.keep_display_list[die] = "  [NOT KEPT]  "
-        else:
-            self.keep_display_list[die] = "    [KEPT]    "
+    def keep_display(self, die: int):  # Displays "kept" or "not kept" underneath the dice.
+        if not die in self.full_kept:  
+            if die in self.keep_list:
+                self.keep_display_list[die] = "     [KEPT]    "
+            else:
+                self.keep_display_list[die] = "   [NOT KEPT]  "
 
 
-    def update_full_keep(self):
+    def update_full_keep(self):  # Updates the full_keep list. This ensures that the user cannot unkeep dice after the round has elapsed.
         self.full_kept += self.keep_list
         self.keep_list = []
-    def dice_val_graphic(self):
+
+
+    def dice_val_graphic(self):  # Displays the dice graphics.
         return display.display_dice(self.dice_array_vals)
 
-    def score(self):
+    def score(self):  # Calculates score.
         amount_of_each = [0, 0, 0, 0, 0, 0]
         for i in range(len(amount_of_each)):
             amount_of_each[i] = self.dice_array_vals.count(i+1)
@@ -84,7 +80,7 @@ class DiceHandler:
         else:
             return 1
 
-    def score_text(self, id):
+    def score_text(self, id):  # Returns the name of the dice hand based on the ID provided from score().
         match id:
             case 8:
                 return "                              FIVE OF A KIND"
@@ -102,7 +98,10 @@ class DiceHandler:
                 return "                                  STRAIGHT"
             case 1:
                 return "                               HIGH DIE ONLY"
+
+
 def main():
+    # my epic ascii
     print(
 '    ,gggggggggggg,        ,a8a,     ,gggg,   ,ggggggg,\n'
 'dP\"\"\"88\"\"\"\"\"\"Y8b,     ,8\" \"8,  ,88\"\"\"Y8b,dP\"\"\"\"\"\"Y8b                         \n'
@@ -133,11 +132,12 @@ def main():
 
 
 def start_game():
+
     game = True
 
     game_round = 3
 
-    round_start = True
+    round_start = True  # If true, dice will be rolled at the start of the round. Important for the while loop.
     dice = DiceHandler()
     scorer = 0
     while game:
@@ -146,26 +146,31 @@ def start_game():
             round_start = False
             dice.roll_all()
             scorer = dice.score()
-        if game_round <= 0 or scorer == 8:
+
+        if game_round <= 0 or scorer == 8:  # Endgame. Happens if there are no more game rounds or if you end up with Five Of A Kind.
             game = False
             print(dice.dice_val_graphic())
-            print(dice.score_text())
-            quit()
+            print(dice.score_text(scorer))
+            match input("[!] Would you like to play again? y/n :"):
+                    case "y":
+                        start_game()
+                    case _:
+                        quit()
         else:
 
             print(dice.dice_val_graphic())
-            print("".join(dice.keep_display_list))
+            print("".join(dice.keep_display_list))  # Turns keep_display_list into a neat string. Why does join() work like that, I hate it.
             print(dice.score_text(scorer))
-            print(dice.keep_list)
 
             try:
                 kept_dice = int(input("\nChoose the dice you would like to keep. Input anything else to continue. : "))
-                if kept_dice < 1 or kept_dice > 5:
+                
+                if kept_dice < 1 or kept_dice > 5:  # tomfoolery prevention
                     input("[!] Please select a valid die.")
                     continue
                 else:
                     dice.keep(kept_dice-1)
-                    dice.keep(kept_dice-1)
+                    dice.keep_display(kept_dice-1)
             except ValueError:
                 match input("[!] Are you sure? y/n :"):
                     case "y":
